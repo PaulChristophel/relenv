@@ -29,6 +29,7 @@ DARWIN = "darwin"
 MACOS_DEVELOPMENT_TARGET = "10.15"
 
 CHECK_HOSTS = (
+    "nexus3.az.gatech.edu/r/saltproject-generic",
     "packages.broadcom.com/artifactory/saltproject-generic",
     "repo.saltproject.io",
     "woz.io",
