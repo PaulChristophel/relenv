@@ -628,6 +628,21 @@ build.add(
 )
 
 build.add(
+    "openldap",
+    wait_on=[
+        "krb5",
+    ],
+    download={
+        "url": "https://github.com/openldap/openldap/archive/refs/tags/OPENLDAP_REL_ENG_2_6_8.tar.gz",
+        # "url": "https://downloads.sourceforge.net/projects/libtirpc/files/libtirpc-{version}.tar.bz2",
+        "fallback_url": "https://github.com/openldap/openldap/archive/refs/tags/OPENLDAP_REL_ENG_2_6_8.tar.gz",
+        "version": "2.6.8",
+        "checksum": "5325c5defe204e8040d0f86ca0ed308579cdeadb",
+        "checkfunc": tarball_version,
+    },
+)
+
+build.add(
     "python",
     build_func=build_python,
     wait_on=[
@@ -644,6 +659,7 @@ build.add(
         "krb5",
         "readline",
         "tirpc",
+        "openldap",
     ],
     download={
         "url": "https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz",
