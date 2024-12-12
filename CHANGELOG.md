@@ -1,3 +1,9 @@
+0.19.1
+======
+
+* Ensure _scripts and _toolchain are included in the build
+
+
 0.19.0
 ======
 
