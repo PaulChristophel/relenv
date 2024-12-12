@@ -310,6 +310,38 @@ def build_zlib(env, dirs, logfp):
     runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
 
 
+def build_openldap(env, dirs, logfp):
+    """
+    Build openldap.
+
+    :param env: The environment dictionary
+    :type env: dict
+    :param dirs: The working directories
+    :type dirs: ``relenv.build.common.Dirs``
+    :param logfp: A handle for the log file
+    :type logfp: file
+    """
+    # Ensure position-independent code for shared libraries
+    env["CFLAGS"] = "-fPIC {}".format(env.get("CFLAGS", ""))
+    
+    runcmd(
+        [
+            "./configure",
+            "--prefix={}".format(dirs.prefix),
+            "--libdir={}/lib".format(dirs.prefix),  # Specify library directory
+            "--enable-shared",  # Build shared libraries
+            "--disable-static",  # Optional: Disable static library building
+            "--build={}".format(env["RELENV_BUILD"]),
+            "--host={}".format(env["RELENV_HOST"]),
+        ],
+        env=env,
+        stderr=logfp,
+        stdout=logfp,
+    )
+    runcmd(["make", "depend"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
 def build_krb(env, dirs, logfp):
     """
     Build kerberos.
@@ -444,7 +476,7 @@ def build_python(env, dirs, logfp):
     # runcmd([str(python), "-m", "ensurepip", "-U"], env=env, stderr=logfp, stdout=logfp)
 
 
-build = builds.add("linux", populate_env=populate_env, version="3.10.15")
+build = builds.add("linux", populate_env=populate_env, version="3.10.16")
 
 build.add(
     "openssl",
@@ -452,8 +484,8 @@ build.add(
     download={
         "url": "https://github.com/openssl/openssl/releases/download/openssl-{version}/openssl-{version}.tar.gz",
         "fallback_url": "https://woz.io/relenv/dependencies/openssl-{version}.tar.gz",
-        "version": "3.2.3",
-        "checksum": "1c04294b2493a868ac5f65d166c29625181a31ed",
+        "version": "3.4.0",
+        "checksum": "5c2f33c3f3601676f225109231142cdc30d44127",
         "checkfunc": tarball_version,
         "checkurl": "https://www.openssl.org/source/",
     },
@@ -467,8 +499,8 @@ build.add(
     download={
         "url": "https://www.openssl.org/source/openssl-{version}.tar.gz",
         "fallback_url": "https://woz.io/relenv/dependencies/openssl-{version}.tar.gz",
-        "version": "3.0.8",
-        "checksum": "580d8a7232327fe1fa6e7db54ac060d4321f40ab",
+        "version": "3.0.9",
+        "checksum": "b569725118c0603537c9a19449046b41b39627c8",
         "checkfunc": tarball_version,
         "checkurl": "https://www.openssl.org/source/",
     },
@@ -503,8 +535,8 @@ build.add(
     download={
         "url": "https://sqlite.org/2024/sqlite-autoconf-{version}.tar.gz",
         "fallback_url": "https://woz.io/relenv/dependencies/sqlite-autoconf-{version}.tar.gz",
-        "version": "3460100",
-        "checksum": "1fdbada080f3285ac864c314bfbfc581b13e804b",
+        "version": "3470200",
+        "checksum": "40f0296080bb63f0321a5652477a6ab87c757aa2",
         "checkfunc": sqlite_version,
         "checkurl": "https://sqlite.org/",
     },
@@ -621,23 +653,23 @@ build.add(
         "url": "https://sourceforge.net/projects/libtirpc/files/libtirpc-{version}.tar.bz2",
         # "url": "https://downloads.sourceforge.net/projects/libtirpc/files/libtirpc-{version}.tar.bz2",
         "fallback_url": "https://woz.io/relenv/dependencies/libtirpc-{version}.tar.bz2",
-        "version": "1.3.4",
-        "checksum": "63c800f81f823254d2706637bab551dec176b99b",
+        "version": "1.3.6",
+        "checksum": "03352908461ad2122e5be4a678893aaa2ad2ac45",
         "checkfunc": tarball_version,
     },
 )
 
 build.add(
     "openldap",
+    build_func=build_openldap,
     wait_on=[
         "krb5",
     ],
     download={
-        "url": "https://github.com/openldap/openldap/archive/refs/tags/OPENLDAP_REL_ENG_2_6_8.tar.gz",
-        # "url": "https://downloads.sourceforge.net/projects/libtirpc/files/libtirpc-{version}.tar.bz2",
-        "fallback_url": "https://github.com/openldap/openldap/archive/refs/tags/OPENLDAP_REL_ENG_2_6_8.tar.gz",
-        "version": "2.6.8",
-        "checksum": "5325c5defe204e8040d0f86ca0ed308579cdeadb",
+        "url": "https://www.openldap.org/software/download/OpenLDAP/openldap-release/openldap-{version}.tgz",
+        "fallback_url": "https://mirrors.jevincanders.net/openldap/openldap-release/openldap-{version}.tgz",
+        "version": "2.5.19",
+        "checksum": "efd9caaa1d36b2b940eb79f30e264b527a80e3c1",
         "checkfunc": tarball_version,
     },
 )
@@ -665,7 +697,7 @@ build.add(
         "url": "https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz",
         "fallback_url": "https://woz.io/relenv/dependencies/Python-{version}.tar.xz",
         "version": build.version,
-        "checksum": "f498fd8921e3c37e6aded9acb11ed23c8daa0bbe",
+        "checksum": "401e6a504a956c8f0aab76c4f3ad9df601a83eb1",
         "checkfunc": python_version,
         "checkurl": "https://www.python.org/ftp/python/",
     },
@@ -682,16 +714,16 @@ build.add(
 )
 
 build = build.copy(
-    version="3.11.10", checksum="eb0ee5c84407445809a556592008cfc1867a39bc"
+    version="3.11.11", checksum="acf539109b024d3c5f1fc63d6e7f08cd294ba56d"
 )
 builds.add("linux", builder=build)
 
 build = build.copy(
-    version="3.12.7", checksum="5a760bbc42c67f1a0aef5bcf7c329348fb88448b"
+    version="3.12.8", checksum="8872c7a124c6970833e0bde4f25d6d7d61c6af6e"
 )
 builds.add("linux", builder=build)
 
 build = build.copy(
-    version="3.13.0", checksum="0f71dce4a3251460985a944bbd1d1b7db1660a91"
+    version="3.13.1", checksum="4b0c2a49a848c3c5d611416099636262a0b9090f"
 )
 builds.add("linux", builder=build)

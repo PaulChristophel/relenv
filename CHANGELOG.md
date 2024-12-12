@@ -1,3 +1,10 @@
+0.19.0
+======
+
+* Add OpenLDAP to builds for python-ldap support
+* Upgrade python versions: 3.10.16, 3.11.11, 3.12.7, 3.13.1
+
+
 0.18.0
 ======
 

@@ -355,7 +355,7 @@ def build_sqlite(env, dirs, logfp):
 
 
 def tarball_version(href):
-    if href.endswith("tar.gz"):
+    if href.endswith("tar.gz") or href.endswith("tgz"):
         try:
             x = href.split("-", 1)[1][:-7]
             if x != "latest":
@@ -951,7 +951,7 @@ class Builder:
         cwd = os.getcwd()
         if download:
             extract_archive(dirs.sources, str(download.filepath))
-            dirs.source = dirs.sources / download.filepath.name.split(".tar")[0]
+            dirs.source = dirs.sources / next((download.filepath.name.split(ext)[0] for ext in [".tar", ".tgz"] if ext in download.filepath.name), None)
             os.chdir(dirs.source)
         else:
             os.chdir(dirs.prefix)
