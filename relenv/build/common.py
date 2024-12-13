@@ -951,7 +951,14 @@ class Builder:
         cwd = os.getcwd()
         if download:
             extract_archive(dirs.sources, str(download.filepath))
-            dirs.source = dirs.sources / next((download.filepath.name.split(ext)[0] for ext in [".tar", ".tgz"] if ext in download.filepath.name), None)
+            dirs.source = dirs.sources / next(
+                (
+                    download.filepath.name.split(ext)[0]
+                    for ext in [".tar", ".tgz"]
+                    if ext in download.filepath.name
+                ),
+                None,
+            )
             os.chdir(dirs.source)
         else:
             os.chdir(dirs.prefix)

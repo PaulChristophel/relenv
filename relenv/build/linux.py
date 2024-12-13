@@ -323,7 +323,7 @@ def build_openldap(env, dirs, logfp):
     """
     # Ensure position-independent code for shared libraries
     env["CFLAGS"] = "-fPIC {}".format(env.get("CFLAGS", ""))
-    
+
     runcmd(
         [
             "./configure",
@@ -341,6 +341,7 @@ def build_openldap(env, dirs, logfp):
     runcmd(["make", "depend"], env=env, stderr=logfp, stdout=logfp)
     runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
     runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
 
 def build_krb(env, dirs, logfp):
     """
