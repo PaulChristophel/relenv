@@ -358,9 +358,9 @@ def test_pip_install_pyzmq(pipexec, pyzmq_version, build_version, arch):
     env = os.environ.copy()
     env["RELENV_BUILDENV"] = "yes"
     env["USE_STATIC_REQUIREMENTS"] = "1"
-    env["CFLAGS"] = (
-        f"{env.get('CFLAGS', '')} -DCMAKE_OSX_ARCHITECTURES='arm64' -DZMQ_HAVE_CURVE=0"
-    )
+    env[
+       "CFLAGS"
+    ] = f"{env.get('CFLAGS', '')} -DCMAKE_OSX_ARCHITECTURES='arm64' -DZMQ_HAVE_CURVE=0"
     p = subprocess.run(
         [
             str(pipexec),
