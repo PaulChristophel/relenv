@@ -25,12 +25,12 @@ from .common import (
     work_dirs,
 )
 
-CT_NG_VER = "1.25.0"
+CT_NG_VER = "1.26.0"
 CT_URL = "http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-{version}.tar.bz2"
 TC_URL = "https://{hostname}/relenv/{version}/toolchain/{host}/{triplet}.tar.xz"
 CICD = "CI" in os.environ
 
-LAST_RELENV_W_TOOLCHAIN = "0.17.4"
+# LAST_RELENV_W_TOOLCHAIN = "0.19.2"
 
 
 def setup_parser(subparsers):
@@ -94,7 +94,7 @@ def fetch(arch, toolchain, clean=False, version=__version__):
     for host in check_hosts:
         url = TC_URL.format(
             hostname=host,
-            version=LAST_RELENV_W_TOOLCHAIN,
+            version=version,
             host=platform.machine(),
             triplet=triplet,
         )
