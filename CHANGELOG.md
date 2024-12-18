@@ -1,3 +1,8 @@
+0.19.3
+======
+
+* Add cyrus-sasl 2.1.28 for python-ldap support
+
 0.19.2
 ======
 

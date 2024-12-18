@@ -310,6 +310,36 @@ def build_zlib(env, dirs, logfp):
     runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
 
 
+def build_sasl(env, dirs, logfp):
+    """
+    Build cyrus-sasl.
+
+    :param env: The environment dictionary
+    :type env: dict
+    :param dirs: The working directories
+    :type dirs: ``relenv.build.common.Dirs``
+    :param logfp: A handle for the log file
+    :type logfp: file
+    """
+    # Ensure position-independent code for shared libraries
+    env["CFLAGS"] = "-fPIC {}".format(env.get("CFLAGS", ""))
+
+    runcmd(
+        [
+            "./configure",
+            "--prefix={}".format(dirs.prefix),
+            "--libdir={}/lib".format(dirs.prefix),  # Specify library directory
+            "--build={}".format(env["RELENV_BUILD"]),
+            "--host={}".format(env["RELENV_HOST"]),
+        ],
+        env=env,
+        stderr=logfp,
+        stdout=logfp,
+    )
+    runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
+
 def build_openldap(env, dirs, logfp):
     """
     Build openldap.
@@ -676,6 +706,21 @@ build.add(
 )
 
 build.add(
+    "cyrus-sasl",
+    build_func=build_sasl,
+    wait_on=[
+        "openldap",
+    ],
+    download={
+        "url": "https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-{version}/cyrus-sasl-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/cyrus-sasl-{version}.tar.gz",
+        "version": "2.1.28",
+        "checksum": "c96d2ccd891904ce0118fdfcdfbd47e37a1e7543",
+        "checkfunc": tarball_version,
+    },
+)
+
+build.add(
     "python",
     build_func=build_python,
     wait_on=[
@@ -693,6 +738,7 @@ build.add(
         "readline",
         "tirpc",
         "openldap",
+        "cyrus-sasl",
     ],
     download={
         "url": "https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz",
