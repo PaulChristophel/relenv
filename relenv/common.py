@@ -18,7 +18,7 @@ import threading
 import time
 
 # relenv package version
-__version__ = "0.19.4"
+__version__ = "0.19.5"
 
 MODULE_DIR = pathlib.Path(__file__).resolve().parent
 
@@ -89,13 +89,30 @@ if sys.platform == "linux":
 else:
     SHEBANG_TPL = SHEBANG_TPL_MACOS
 
+class SuppressSpinnerFilter(logging.Filter):
+    """
+    Suppress log messages ending with specific spinner patterns.
+    """
+    def filter(self, record):
+        spinner_patterns = ["] -", "] \\", "] |", "] /"]
+        return not any(pattern in record.getMessage() for pattern in spinner_patterns)
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s,%(msecs)03d+0000 [%(levelname)-7s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+# Add the custom filter to the root logger
+logging.getLogger().addFilter(SuppressSpinnerFilter())
 
 log = logging.getLogger(__name__)
 
-
 class RelenvException(Exception):
     """
-    Base class for exeptions generated from relenv.
+    Base class for exceptions generated from relenv.
     """
 
 
