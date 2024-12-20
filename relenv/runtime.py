@@ -172,7 +172,7 @@ _CONFIG_VARS_DEFAULTS = {
     "CFLAGS": "-Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall",
     "CPPFLAGS": "-I. -I./Include",
     "CXX": "g++",
-    "LIBDEST": "/usr/local/lib/python3.8",
+    "LIBDEST": "/usr/local/lib/python3.9",
     "SCRIPTDIR": "/usr/local/lib",
     "BLDSHARED": "gcc -shared",
     "LDFLAGS": "",

@@ -1,3 +1,12 @@
+0.19.4
+======
+
+* Add libyaml 0.2.5 to address error during build
+  "yaml/_yaml.h:2:10: fatal error: yaml.h: No such file or directory"
+* Update _CONFIG_VARS_DEFAULTS to point to python 3.9, because 3.8 
+  is unsupported.
+
+
 0.19.3
 ======
 

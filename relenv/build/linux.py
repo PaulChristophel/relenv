@@ -340,6 +340,36 @@ def build_sasl(env, dirs, logfp):
     runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
 
 
+def build_libyaml(env, dirs, logfp):
+    """
+    Build libyaml.
+
+    :param env: The environment dictionary
+    :type env: dict
+    :param dirs: The working directories
+    :type dirs: ``relenv.build.common.Dirs``
+    :param logfp: A handle for the log file
+    :type logfp: file
+    """
+    # Ensure position-independent code for shared libraries
+    env["CFLAGS"] = "-fPIC {}".format(env.get("CFLAGS", ""))
+
+    runcmd(
+        [
+            "./configure",
+            "--prefix={}".format(dirs.prefix),
+            "--libdir={}/lib".format(dirs.prefix),  # Specify library directory
+            "--build={}".format(env["RELENV_BUILD"]),
+            "--host={}".format(env["RELENV_HOST"]),
+        ],
+        env=env,
+        stderr=logfp,
+        stdout=logfp,
+    )
+    runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
+
 def build_openldap(env, dirs, logfp):
     """
     Build openldap.
@@ -721,9 +751,22 @@ build.add(
 )
 
 build.add(
+    "libyaml",
+    build_func=build_libyaml,
+    download={
+        "url": "https://github.com/yaml/libyaml/releases/download/{version}/yaml-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/yaml-{version}.tar.gz",
+        "version": "0.2.5",
+        "checksum": "f49b39644caccabef049e3ec8859e8fdf94b686e",
+        "checkfunc": tarball_version,
+    },
+)
+
+build.add(
     "python",
     build_func=build_python,
     wait_on=[
+        "libyaml",
         "openssl",
         "libxcrypt",
         "XZ",
