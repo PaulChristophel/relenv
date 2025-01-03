@@ -1514,7 +1514,6 @@ def finalize(env, dirs, logfp):
         logfp.write(f"\nRUN PIP {pkg} {upgrade}\n")
         target = None
         python = dirs.prefix / "bin" / "python3"
-        env = os.environ.copy()
         if sys.platform == LINUX:
             if env["RELENV_HOST_ARCH"] != env["RELENV_BUILD_ARCH"]:
                 target = pymodules / "site-packages"
@@ -1530,7 +1529,7 @@ def finalize(env, dirs, logfp):
             cmd.append("--upgrade")
         if target:
             cmd.append("--target={}".format(target))
-        runcmd(cmd, env=env, stderr=logfp, stdout=logfp)
+        runcmd(cmd, env=os.environ.copy(), stderr=logfp, stdout=logfp)
 
     runpip("wheel")
     # This needs to handle running from the root of the git repo and also from
