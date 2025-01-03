@@ -1,3 +1,9 @@
+0.19.5
+======
+
+* Respect environment variables.
+* Fix typos in changelog
+
 0.19.4
 ======
 
@@ -34,9 +40,9 @@
 0.18.0
 ======
 
-* Relenv no longer relies on legacy infurstrucutre for ci/cd
+* Relenv no longer relies on legacy infrastructure for ci/cd
 * Relenv python builds are no stored and downloaded from github rather than
-  legacy infurstructure
+  legacy infrastructure
 
 
 0.17.4
@@ -74,7 +80,7 @@
 * Upgrade openssl to 3.2.2
 * Upgrade XZ to 5.6.2
 * Upgrade SQLite to 3460000
-* Use sha1 for download checksums intead of md5
+* Use sha1 for download checksums instead of md5
 
 
 0.16.1
@@ -163,7 +169,7 @@
 0.13.8
 ======
 
-* Fix wart in python-config's shebang cuasing syntax error.
+* Fix wart in python-config's shebang causing syntax error.
 
 
 0.13.7
@@ -178,7 +184,7 @@
 
 * Do not set openssl modules directory on windows since were still on 1.1.x
 * Fix load module deprecations warnings
-* Ignore load module imporet warnings for now
+* Ignore load module import warnings for now
 
 
 0.13.5
@@ -221,8 +227,8 @@
 
 * Tests and fixes for installing m2crypto
 * Fix pipelines to upload to repo.saltstack.io
-* Ship with openssl 3.1.1 on linux and darwin for FIPS compatability
-* Update openssl and python minior version to address CVEs
+* Ship with openssl 3.1.1 on linux and darwin for FIPS compatibility
+* Update openssl and python minor version to address CVEs
 
 
 0.12.3
@@ -263,7 +269,7 @@
 0.11.1
 ======
 
-* Import all relenv modules using a reletive path when relenv.runtime is
+* Import all relenv modules using a relative path when relenv.runtime is
   imported.
 
 
@@ -327,14 +333,14 @@
 
 * Update to python 3.10.10
 * Remove C-python test suite from build
-* Fix rpath on pip installed C moudles
+* Fix rpath on pip installed C modules
 
 
 0.6.0
 =====
 
 * Add python 3.11.2
-* Upgrade linux python depenencies
+* Upgrade linux python dependencies
 * Add version check script
 
 
@@ -420,7 +426,7 @@
 =====
 
 * Fix issue where relenv runtime was being imported from user site packages
-* Added test to install salt with USE_STATIC_PACAKGES environment set
+* Added test to install salt with USE_STATIC_PACKAGES environment set
 * Switch CI/CD to use saltstack hosted runners
 * General code cleanup
 
@@ -429,7 +435,7 @@
 =====
 
 * The toolchain command defaults to the build box architecture
-* Build macos on catalinia for now
+* Build macos on catalina for now
 
 
 0.2.1
@@ -442,9 +448,9 @@
 =====
 
 * Skip downloads that exist and are valid.
-* Inlude changelog in documentation.
+* Include changelog in documentation.
 * Better help when no sub-command given.
-* Add some debuging or relocate module.
+* Add some debugging or relocate module.
 
 
 0.1.0

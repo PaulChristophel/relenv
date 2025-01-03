@@ -963,7 +963,12 @@ class Builder:
         else:
             os.chdir(dirs.prefix)
 
-        env = os.environ.copy()
+        if sys.platform == "win32":
+            env = os.environ.copy()
+        else:
+            env = {
+                "PATH": os.environ["PATH"],
+            }
         env["RELENV_DEBUG"] = "1"
         env["RELENV_BUILDENV"] = "1"
         env["RELENV_HOST"] = self.triplet
@@ -1509,6 +1514,7 @@ def finalize(env, dirs, logfp):
         logfp.write(f"\nRUN PIP {pkg} {upgrade}\n")
         target = None
         python = dirs.prefix / "bin" / "python3"
+        env = os.environ.copy()
         if sys.platform == LINUX:
             if env["RELENV_HOST_ARCH"] != env["RELENV_BUILD_ARCH"]:
                 target = pymodules / "site-packages"
@@ -1524,7 +1530,6 @@ def finalize(env, dirs, logfp):
             cmd.append("--upgrade")
         if target:
             cmd.append("--target={}".format(target))
-        env = os.environ.copy()
         runcmd(cmd, env=env, stderr=logfp, stdout=logfp)
 
     runpip("wheel")
