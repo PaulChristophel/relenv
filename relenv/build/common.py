@@ -1524,13 +1524,14 @@ def finalize(env, dirs, logfp):
             cmd.append("--upgrade")
         if target:
             cmd.append("--target={}".format(target))
+        env = os.environ.copy()
         runcmd(cmd, env=env, stderr=logfp, stdout=logfp)
 
     runpip("wheel")
     # This needs to handle running from the root of the git repo and also from
     # an installed Relenv
-    if (MODULE_DIR / ".git").exists():
-        runpip(MODULE_DIR, upgrade=True)
+    if (MODULE_DIR.parent / ".git").exists():
+        runpip(MODULE_DIR.parent, upgrade=True)
     else:
         runpip("relenv", upgrade=True)
     globs = [
