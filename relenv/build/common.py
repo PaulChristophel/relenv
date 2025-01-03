@@ -963,12 +963,7 @@ class Builder:
         else:
             os.chdir(dirs.prefix)
 
-        if sys.platform == "win32":
-            env = os.environ.copy()
-        else:
-            env = {
-                "PATH": os.environ["PATH"],
-            }
+        env = os.environ.copy()
         env["RELENV_DEBUG"] = "1"
         env["RELENV_BUILDENV"] = "1"
         env["RELENV_HOST"] = self.triplet
