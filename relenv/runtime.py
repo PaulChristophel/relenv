@@ -1,7 +1,7 @@
 # Copyright 2022-2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2
 """
-This code is run when initializing the python interperter in a Relenv environment.
+This code is run when initializing the python interpreter in a Relenv environment.
 
 - Point Relenv's Openssl to the system installed Openssl certificate path
 - Make sure pip creates scripts with a shebang that points to the correct
@@ -26,10 +26,10 @@ import warnings
 
 # relenv.pth has a __file__ which is set to the path to site.py of the python
 # interpreter being used. We're using that to determine the proper
-# relenv.runtime to import. Working around the rest of the import mechanisims.
+# relenv.runtime to import. Working around the rest of the import mechanisms.
 # Import any other needed modules from this same relenv. This prevents pulling
 # in a relenv from some other location in the path and is needed because these
-# imports happen before our path munghing in site in wrapsitecustomize.
+# imports happen before our path munging in site in wrapsitecustomize.
 
 
 def path_import(name, path):
@@ -175,7 +175,7 @@ _CONFIG_VARS_DEFAULTS = {
     "LIBDEST": "/usr/local/lib/python3.9",
     "SCRIPTDIR": "/usr/local/lib",
     "BLDSHARED": "gcc -shared",
-    "LDFLAGS": "",
+    "LDFLAGS": "-lzmq -lkrb5 -lgssapi",
     "LDCXXSHARED": "g++ -shared",
     "LDSHARED": "gcc -shared",
 }
@@ -187,7 +187,7 @@ def system_sysconfig():
     """
     Read the system python's sysconfig values.
 
-    Th system python isthe one installed by your package manager. Memoize them
+    The system python is the one installed by your package manager. Memoize them
     to avoid the overhead of shelling out.
     """
     global _SYSTEM_CONFIG_VARS
@@ -274,6 +274,8 @@ def finalize_options_wrapper(func):
         func(self, *args, **kwargs)
         if "RELENV_BUILDENV" in os.environ:
             self.include_dirs.append(f"{relenv_root()}/include")
+            debug(f"Include dirs: {self.include_dirs}")
+
 
     return wrapper
 

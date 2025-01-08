@@ -1,3 +1,9 @@
+0.19.6
+======
+
+* Add zeromq
+* Add libsodium
+
 0.19.5
 ======
 

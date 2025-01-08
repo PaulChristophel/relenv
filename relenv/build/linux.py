@@ -370,6 +370,132 @@ def build_libyaml(env, dirs, logfp):
     runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
 
 
+def build_libsodium(env, dirs, logfp):
+    """
+    Build libsodium.
+
+    :param env: The environment dictionary
+    :type env: dict
+    :param dirs: The working directories
+    :type dirs: ``relenv.build.common.Dirs``
+    :param logfp: A handle for the log file
+    :type logfp: file
+    """
+    # Ensure position-independent code for shared libraries
+    env["CFLAGS"] = "-fPIC {}".format(env.get("CFLAGS", ""))
+
+    runcmd(
+        [
+            "./configure",
+            "--prefix={}".format(dirs.prefix),
+            "--libdir={}/lib".format(dirs.prefix),  # Specify library directory
+            "--build={}".format(env["RELENV_BUILD"]),
+            "--host={}".format(env["RELENV_HOST"]),
+        ],
+        env=env,
+        stderr=logfp,
+        stdout=logfp,
+    )
+    runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
+
+def build_libmd(env, dirs, logfp):
+    """
+    Build libmd.
+
+    :param env: The environment dictionary
+    :type env: dict
+    :param dirs: The working directories
+    :type dirs: ``relenv.build.common.Dirs``
+    :param logfp: A handle for the log file
+    :type logfp: file
+    """
+    # Ensure position-independent code for shared libraries
+    env["CFLAGS"] = "-fPIC {}".format(env.get("CFLAGS", ""))
+
+    runcmd(
+        [
+            "./configure",
+            "--prefix={}".format(dirs.prefix),
+            "--libdir={}/lib".format(dirs.prefix),  # Specify library directory
+            "--build={}".format(env["RELENV_BUILD"]),
+            "--host={}".format(env["RELENV_HOST"]),
+        ],
+        env=env,
+        stderr=logfp,
+        stdout=logfp,
+    )
+    runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
+
+def build_libbsd(env, dirs, logfp):
+    """
+    Build libbsd.
+
+    :param env: The environment dictionary
+    :type env: dict
+    :param dirs: The working directories
+    :type dirs: ``relenv.build.common.Dirs``
+    :param logfp: A handle for the log file
+    :type logfp: file
+    """
+    # Ensure position-independent code for shared libraries
+    env["CFLAGS"] = "-fPIC {}".format(env.get("CFLAGS", ""))
+
+    runcmd(
+        [
+            "./configure",
+            "--prefix={}".format(dirs.prefix),
+            "--libdir={}/lib".format(dirs.prefix),  # Specify library directory
+            "--build={}".format(env["RELENV_BUILD"]),
+            "--host={}".format(env["RELENV_HOST"]),
+            "--enable-year2038",
+        ],
+        env=env,
+        stderr=logfp,
+        stdout=logfp,
+    )
+    runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
+
+def build_zeromq(env, dirs, logfp):
+    """
+    Build zeromq.
+
+    :param env: The environment dictionary
+    :type env: dict
+    :param dirs: The working directories
+    :type dirs: ``relenv.build.common.Dirs``
+    :param logfp: A handle for the log file
+    :type logfp: file
+    """
+    # Ensure position-independent code for shared libraries
+    env["CFLAGS"] = f"-fPIC {env.get('CFLAGS', '')}"
+    env["LDFLAGS"] = f"{env['LDFLAGS']} -lbsd -lsodium"
+    env["CPPFLAGS"] += f" -I{dirs.prefix}/include"
+    env["PKG_CONFIG_PATH"] = f"{dirs.prefix}/lib/pkgconfig"
+    env["LD_LIBRARY_PATH"] = f"{dirs.prefix}/lib:{env.get('LD_LIBRARY_PATH', '')}"
+    runcmd(
+        [
+            "./configure",
+            "--prefix={}".format(dirs.prefix),
+            "--libdir={}/lib".format(dirs.prefix),  # Specify library directory
+            "--build={}".format(env["RELENV_BUILD"]),
+            "--host={}".format(env["RELENV_HOST"]),
+            "--with-libsodium",
+
+        ],
+        env=env,
+        stderr=logfp,
+        stdout=logfp,
+    )
+    runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
+
 def build_openldap(env, dirs, logfp):
     """
     Build openldap.
@@ -763,6 +889,62 @@ build.add(
 )
 
 build.add(
+    "libsodium",
+    build_func=build_libsodium,
+    download={
+        "url": "https://github.com/jedisct1/libsodium/releases/download/{version}-RELEASE/libsodium-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/libsodium-{version}.tar.gz",
+        "version": "1.0.20",
+        "checksum": "e37f50e66b4b90957cfef5792c6af6abf27ae9c6",
+        "checkfunc": tarball_version,
+    },
+)
+
+build.add(
+    "libmd",
+    build_func=build_libmd,
+    download={
+        "url": "https://archive.hadrons.org/software/libmd/libmd-{version}.tar.xz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/libmd-{version}.tar.gz",
+        "version": "1.1.0",
+        "checksum": "72718d5ffad112b702ba84fd40900486f8179642",
+        "checkfunc": tarball_version,
+    },
+)
+
+build.add(
+    "libbsd",
+    build_func=build_libbsd,
+    wait_on=[
+        "libmd",
+    ],
+    download={
+        "url": "https://libbsd.freedesktop.org/releases/libbsd-{version}.tar.xz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/libbsd-{version}.tar.gz",
+        "version": "0.12.2",
+        "checksum": "c8f49920dec71e8e72f2b19f6c209b440a367d3a",
+        "checkfunc": tarball_version,
+    },
+)
+
+build.add(
+    "zeromq",
+    build_func=build_zeromq,
+    wait_on=[
+        "libsodium",
+        "libbsd"
+    ],
+    download={
+        "url": "https://github.com/zeromq/libzmq/releases/download/v{version}/zeromq-{version}.tar.gz",
+        
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/zeromq-{version}.tar.gz",
+        "version": "4.3.5",
+        "checksum": "bdbf686c8a40ba638e21cf74e34dbb425e108500",
+        "checkfunc": tarball_version,
+    },
+)
+
+build.add(
     "python",
     build_func=build_python,
     wait_on=[
@@ -782,6 +964,7 @@ build.add(
         "tirpc",
         "openldap",
         "cyrus-sasl",
+        "zeromq",
     ],
     download={
         "url": "https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz",
