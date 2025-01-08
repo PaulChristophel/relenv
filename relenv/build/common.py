@@ -38,6 +38,7 @@ from relenv.common import (
     runcmd,
     work_dirs,
     fetch_url,
+    __version__
 )
 import relenv.relocate
 
@@ -1537,7 +1538,7 @@ def finalize(env, dirs, logfp):
     if (MODULE_DIR.parent / ".git").exists():
         runpip(MODULE_DIR.parent, upgrade=True)
     else:
-        runpip("relenv", upgrade=True)
+        runpip(f"relenv=={__version__}")
     globs = [
         "/bin/python*",
         "/bin/pip*",

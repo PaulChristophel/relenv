@@ -55,7 +55,7 @@ def buildenv(relenv_path=None):
         "CXX": f"{toolchain}/bin/{triplet}-g++ -no-pie",
         "CFLAGS": (
             #   f"-L{relenv_path}/lib -L{toolchain}/{triplet}/sysroot/lib "
-            f"-I{relenv_path}/include "
+            f"-I{relenv_path}/include -fPIC "
             f"-I{toolchain}/sysroot/usr/include"
         ),
         "CPPFLAGS": (
@@ -68,10 +68,11 @@ def buildenv(relenv_path=None):
         ),
         "LDFLAGS": (
             f"-L{relenv_path}/lib -L{toolchain}/{triplet}/sysroot/lib "
-            f"-Wl,-rpath,{relenv_path}/lib"
+            f"-Wl,-rpath,{relenv_path}/lib "
+            f"-lzmq -lkrb5 -lgssapi"  # Add the required linker flags here
         ),
     }
-    if sys.platform == "dawin":
+    if sys.platform == "darwin":
         env["MACOS_DEVELOPMENT_TARGET"] = MACOS_DEVELOPMENT_TARGET
     return env
 

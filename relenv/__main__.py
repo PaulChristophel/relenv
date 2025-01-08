@@ -43,7 +43,7 @@ def setup_cli():
 
 def main():
     """
-    Run the relenv cli and disbatch to subcommands.
+    Run the relenv cli and dispatch to subcommands.
     """
     parser = setup_cli()
     args = parser.parse_args()
