@@ -59,19 +59,23 @@ def buildenv(relenv_path=None):
             f"-I{toolchain}/sysroot/usr/include"
         ),
         "CPPFLAGS": (
-            #   f"-L{relenv_path}/lib -L{toolchain}/{triplet}/sysroot/lib "
-            f"-I{relenv_path}/include -I{toolchain}/{triplet}/sysroot/usr/include"
+            f"-I{relenv_path}/include "
+            f"-I{toolchain}/{triplet}/sysroot/usr/include"
         ),
         "CMAKE_CFLAGS": (
-            #   f"-L{relenv_path}/lib -L{toolchain}/{triplet}/sysroot/lib "
-            f"-I{relenv_path}/include -I{toolchain}/{triplet}/sysroot/usr/include"
+            f"-I{relenv_path}/include "
+            f"-I{toolchain}/{triplet}/sysroot/usr/include "
+            f"-fPIC"  # Align with CFLAGS
         ),
         "LDFLAGS": (
             f"-L{relenv_path}/lib -L{toolchain}/{triplet}/sysroot/lib "
             f"-Wl,-rpath,{relenv_path}/lib "
             f"-lzmq -lkrb5 -lgssapi"  # Add the required linker flags here
         ),
-    }
+        "PKG_CONFIG_PATH": (
+            f"{relenv_path}/lib/pkgconfig:"
+            f"{toolchain}/{triplet}/lib/pkgconfig"
+        ),    }
     if sys.platform == "darwin":
         env["MACOS_DEVELOPMENT_TARGET"] = MACOS_DEVELOPMENT_TARGET
     return env
