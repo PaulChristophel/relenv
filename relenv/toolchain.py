@@ -28,9 +28,11 @@ from .common import (
 CT_NG_VER = "1.26.0"
 CT_URL = "http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-{version}.tar.bz2"
 TC_URL = "https://{hostname}/relenv/{version}/toolchain/{host}/{triplet}.tar.xz"
-CICD = "CI" in os.environ
 
-# LAST_RELENV_W_TOOLCHAIN = "0.19.2"
+RUSTUP_URL = "https://sh.rustup.rs"
+DEFAULT_RUST_VERSION = "stable"
+
+CICD = "CI" in os.environ
 
 
 def setup_parser(subparsers):

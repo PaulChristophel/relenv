@@ -175,7 +175,7 @@ _CONFIG_VARS_DEFAULTS = {
     "LIBDEST": "/usr/local/lib/python3.9",
     "SCRIPTDIR": "/usr/local/lib",
     "BLDSHARED": "gcc -shared",
-    "LDFLAGS": "-lzmq -lkrb5 -lgssapi",
+    "LDFLAGS": "",
     "LDCXXSHARED": "g++ -shared",
     "LDSHARED": "gcc -shared",
 }
@@ -275,7 +275,6 @@ def finalize_options_wrapper(func):
         if "RELENV_BUILDENV" in os.environ:
             self.include_dirs.append(f"{relenv_root()}/include")
             debug(f"Include dirs: {self.include_dirs}")
-
 
     return wrapper
 
@@ -591,7 +590,11 @@ def wrap_pip_build_wheel(name):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             dirs = common().work_dirs()
-            toolchain = dirs.toolchain / common().get_triplet()
+            triplet = common().get_triplet()
+            toolchain = dirs.toolchain / triplet
+
+            cc = f"{toolchain}/bin/{triplet}-gcc"
+
             if not toolchain.exists():
                 debug("Unable to set CARGO_HOME no toolchain exists")
             else:
@@ -599,12 +602,17 @@ def wrap_pip_build_wheel(name):
                 rustflags = (
                     f"-C link-arg=-Wl,-rpath,{relenvroot}/lib "
                     f"-C link-arg=-L{relenvroot}/lib "
-                    f"-C link-arg=-L{toolchain}/sysroot/lib"
+                    f"-C link-arg=-L{toolchain}/sysroot/lib "
+                    f"-C linker={cc}"
                 )
                 cargo_home = str(toolchain / "cargo")
                 set_env_if_not_set("CARGO_HOME", cargo_home)
+                set_env_if_not_set("RUSTC", f"{cargo_home}/bin/rustc")
+                set_env_if_not_set("RUSTUP_HOME", f"{cargo_home}/.rustup")
                 set_env_if_not_set("OPENSSL_DIR", relenvroot)
                 set_env_if_not_set("RUSTFLAGS", rustflags)
+                set_env_if_not_set("CC", cc)
+                set_env_if_not_set("CXX", f"{toolchain}/bin/{triplet}-g++")
             return func(*args, **kwargs)
 
         return wrapper

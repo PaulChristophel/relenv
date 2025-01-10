@@ -38,7 +38,7 @@ from relenv.common import (
     runcmd,
     work_dirs,
     fetch_url,
-    __version__
+    __version__,
 )
 import relenv.relocate
 
@@ -1543,6 +1543,9 @@ def finalize(env, dirs, logfp):
         "/bin/python*",
         "/bin/pip*",
         "/bin/relenv",
+        "/bin/krb5-config",
+        # "/sbin/*",
+        # "/libexec/*",
         "/lib/python*/ensurepip/*",
         "/lib/python*/site-packages/*",
         "/include/*",

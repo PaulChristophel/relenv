@@ -18,7 +18,7 @@ import threading
 import time
 
 # relenv package version
-__version__ = "0.19.6b3"
+__version__ = "0.19.6b4"
 
 MODULE_DIR = pathlib.Path(__file__).resolve().parent
 
@@ -90,6 +90,7 @@ else:
     SHEBANG_TPL = SHEBANG_TPL_MACOS
 
 log = logging.getLogger(__name__)
+
 
 class RelenvException(Exception):
     """

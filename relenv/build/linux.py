@@ -486,7 +486,6 @@ def build_zeromq(env, dirs, logfp):
             "--build={}".format(env["RELENV_BUILD"]),
             "--host={}".format(env["RELENV_HOST"]),
             "--with-libsodium",
-
         ],
         env=env,
         stderr=logfp,
@@ -529,7 +528,7 @@ def build_openldap(env, dirs, logfp):
     runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
 
 
-def build_krb(env, dirs, logfp):
+def build_krb5(env, dirs, logfp):
     """
     Build kerberos.
 
@@ -540,6 +539,7 @@ def build_krb(env, dirs, logfp):
     :param logfp: A handle for the log file
     :type logfp: file
     """
+    # env["LDFLAGS"] = f"{env['LDFLAGS']} -lldap -llber -lreadline"
     if env["RELENV_BUILD_ARCH"] != env["RELENV_HOST_ARCH"]:
         env["krb5_cv_attr_constructor_destructor"] = "yes,yes"
         env["ac_cv_func_regcomp"] = "yes"
@@ -551,6 +551,8 @@ def build_krb(env, dirs, logfp):
             "--prefix={}".format(dirs.prefix),
             "--without-system-verto",
             "--without-libedit",
+            # "--with-readline",
+            # "--with-ldap",
             "--build={}".format(env["RELENV_BUILD"]),
             "--host={}".format(env["RELENV_HOST"]),
         ],
@@ -670,7 +672,7 @@ build.add(
     build_func=build_openssl,
     download={
         "url": "https://github.com/openssl/openssl/releases/download/openssl-{version}/openssl-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/openssl-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/openssl-{version}.tar.gz",
         "version": "3.4.0",
         "checksum": "5c2f33c3f3601676f225109231142cdc30d44127",
         "checkfunc": tarball_version,
@@ -685,7 +687,7 @@ build.add(
     wait_on=["openssl"],
     download={
         "url": "https://www.openssl.org/source/openssl-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/openssl-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/openssl-{version}.tar.gz",
         "version": "3.0.9",
         "checksum": "b569725118c0603537c9a19449046b41b39627c8",
         "checkfunc": tarball_version,
@@ -709,7 +711,7 @@ build.add(
     "XZ",
     download={
         "url": "http://tukaani.org/xz/xz-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/xz-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/xz-{version}.tar.gz",
         "version": "5.6.2",
         "checksum": "0d6b10e4628fe08e19293c65e8dbcaade084a083",
         "checkfunc": tarball_version,
@@ -721,7 +723,7 @@ build.add(
     build_func=build_sqlite,
     download={
         "url": "https://sqlite.org/2024/sqlite-autoconf-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/sqlite-autoconf-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/sqlite-autoconf-{version}.tar.gz",
         "version": "3470200",
         "checksum": "40f0296080bb63f0321a5652477a6ab87c757aa2",
         "checkfunc": sqlite_version,
@@ -734,7 +736,7 @@ build.add(
     build_func=build_bzip2,
     download={
         "url": "https://sourceware.org/pub/bzip2/bzip2-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/bzip2-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/bzip2-{version}.tar.gz",
         "version": "1.0.8",
         "checksum": "bf7badf7e248e0ecf465d33c2f5aeec774209227",
         "checkfunc": tarball_version,
@@ -746,7 +748,7 @@ build.add(
     build_func=build_gdbm,
     download={
         "url": "https://ftp.gnu.org/gnu/gdbm/gdbm-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/gdbm-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/gdbm-{version}.tar.gz",
         "version": "1.24",
         "checksum": "7bd455f28c9e4afacc042e0c712aac1b2391fef2",
         "checkfunc": tarball_version,
@@ -758,7 +760,7 @@ build.add(
     build_func=build_ncurses,
     download={
         "url": "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/ncurses-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/ncurses-{version}.tar.gz",
         # XXX: Need to work out tinfo linkage
         # "version": "6.5",
         # "checksum": "cde3024ac3f9ef21eaed6f001476ea8fffcaa381",
@@ -773,7 +775,7 @@ build.add(
     build_libffi,
     download={
         "url": "https://github.com/libffi/libffi/releases/download/v{version}/libffi-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/libffi-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/libffi-{version}.tar.gz",
         "version": "3.4.6",
         "checksum": "19251dfee520dff42acefe36bfe76d7168071e01",
         "checkfunc": github_version,
@@ -786,7 +788,7 @@ build.add(
     build_zlib,
     download={
         "url": "https://zlib.net/fossils/zlib-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/zlib-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/zlib-{version}.tar.gz",
         "version": "1.3.1",
         "checksum": "f535367b1a11e2f9ac3bec723fb007fbc0d189e5",
         "checkfunc": tarball_version,
@@ -797,7 +799,7 @@ build.add(
     "uuid",
     download={
         "url": "https://sourceforge.net/projects/libuuid/files/libuuid-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/libuuid-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/libuuid-{version}.tar.gz",
         "version": "1.0.3",
         "checksum": "46eaedb875ae6e63677b51ec583656199241d597",
         "checkfunc": uuid_version,
@@ -806,11 +808,11 @@ build.add(
 
 build.add(
     "krb5",
-    build_func=build_krb,
-    wait_on=["openssl"],
+    build_func=build_krb5,
+    wait_on=["openssl", "readline"],
     download={
         "url": "https://kerberos.org/dist/krb5/{version}/krb5-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/krb5-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/krb5-{version}.tar.gz",
         "version": "1.21",
         "checksum": "e2ee531443122376ac8b62b3848d94376f646089",
         "checkfunc": krb_version,
@@ -824,7 +826,7 @@ build.add(
     wait_on=["ncurses"],
     download={
         "url": "https://ftp.gnu.org/gnu/readline/readline-{version}.tar.gz",
-        "fallback_url": "https://woz.io/relenv/dependencies/readline-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/readline-{version}.tar.gz",
         "version": "8.2.13",
         "checksum": "5ffb6a334c2422acbe8f4d2cb11e345265c8d930",
         "checkfunc": tarball_version,
@@ -839,7 +841,7 @@ build.add(
     download={
         "url": "https://sourceforge.net/projects/libtirpc/files/libtirpc-{version}.tar.bz2",
         # "url": "https://downloads.sourceforge.net/projects/libtirpc/files/libtirpc-{version}.tar.bz2",
-        "fallback_url": "https://woz.io/relenv/dependencies/libtirpc-{version}.tar.bz2",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/libtirpc-{version}.tar.bz2",
         "version": "1.3.6",
         "checksum": "03352908461ad2122e5be4a678893aaa2ad2ac45",
         "checkfunc": tarball_version,
@@ -930,13 +932,9 @@ build.add(
 build.add(
     "zeromq",
     build_func=build_zeromq,
-    wait_on=[
-        "libsodium",
-        "libbsd"
-    ],
+    wait_on=["libsodium", "libbsd"],
     download={
         "url": "https://github.com/zeromq/libzmq/releases/download/v{version}/zeromq-{version}.tar.gz",
-        
         "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/zeromq-{version}.tar.gz",
         "version": "4.3.5",
         "checksum": "bdbf686c8a40ba638e21cf74e34dbb425e108500",
@@ -968,7 +966,7 @@ build.add(
     ],
     download={
         "url": "https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz",
-        "fallback_url": "https://woz.io/relenv/dependencies/Python-{version}.tar.xz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/Python-{version}.tar.xz",
         "version": build.version,
         "checksum": "401e6a504a956c8f0aab76c4f3ad9df601a83eb1",
         "checkfunc": python_version,

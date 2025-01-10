@@ -3,6 +3,7 @@
 """
 Helper for building libraries to install into a relenv environment.
 """
+import os
 import logging
 import sys
 
@@ -51,6 +52,11 @@ def buildenv(relenv_path=None):
         "TOOLCHAIN_PATH": f"{toolchain}",
         "TRIPLET": f"{triplet}",
         "RELENV_PATH": f"{relenv_path}",
+        "CARGO_HOME": f"{toolchain}/cargo",
+        "RUSTUP_HOME": f"{toolchain}/cargo/.rustup",
+        "RUSTC": f"{toolchain}/cargo/bin/rustc",
+        "RUSTFLAGS": os.environ.get("RUSTFLAGS", "")
+        + f"-C linker={toolchain}/bin/{triplet}-gcc",
         "CC": f"{toolchain}/bin/{triplet}-gcc -no-pie",
         "CXX": f"{toolchain}/bin/{triplet}-g++ -no-pie",
         "CFLAGS": (
@@ -59,8 +65,7 @@ def buildenv(relenv_path=None):
             f"-I{toolchain}/sysroot/usr/include"
         ),
         "CPPFLAGS": (
-            f"-I{relenv_path}/include "
-            f"-I{toolchain}/{triplet}/sysroot/usr/include"
+            f"-I{relenv_path}/include " f"-I{toolchain}/{triplet}/sysroot/usr/include"
         ),
         "CMAKE_CFLAGS": (
             f"-I{relenv_path}/include "
@@ -73,9 +78,9 @@ def buildenv(relenv_path=None):
             f"-lzmq -lkrb5 -lgssapi"  # Add the required linker flags here
         ),
         "PKG_CONFIG_PATH": (
-            f"{relenv_path}/lib/pkgconfig:"
-            f"{toolchain}/{triplet}/lib/pkgconfig"
-        ),    }
+            f"{relenv_path}/lib/pkgconfig:" f"{toolchain}/{triplet}/lib/pkgconfig"
+        ),
+    }
     if sys.platform == "darwin":
         env["MACOS_DEVELOPMENT_TARGET"] = MACOS_DEVELOPMENT_TARGET
     return env
