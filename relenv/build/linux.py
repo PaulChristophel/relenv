@@ -474,10 +474,11 @@ def build_zeromq(env, dirs, logfp):
     """
     # Ensure position-independent code for shared libraries
     env["CFLAGS"] = f"-fPIC {env.get('CFLAGS', '')}"
-    env["LDFLAGS"] = f"{env['LDFLAGS']} -lbsd -lsodium"
+    env["CXXFLAGS"] = f"-std=c++11 -fPIC {env.get('CXXFLAGS', '')}"
+    env["LDFLAGS"] = f"{env['LDFLAGS']} -L{dirs.prefix}/lib -lbsd -lsodium -lstdc++"
     env["CPPFLAGS"] += f" -I{dirs.prefix}/include"
-    env["PKG_CONFIG_PATH"] = f"{dirs.prefix}/lib/pkgconfig"
-    env["LD_LIBRARY_PATH"] = f"{dirs.prefix}/lib:{env.get('LD_LIBRARY_PATH', '')}"
+    env["PKG_CONFIG_PATH"] = f"{dirs.prefix}/lib/pkgconfig:{env.get('PKG_CONFIG_PATH', '')}"
+    env["LD_LIBRARY_PATH"] = f"{dirs.prefix}/lib:{dirs.prefix}/lib64:{env.get('LD_LIBRARY_PATH', '')}"
     runcmd(
         [
             "./configure",
@@ -555,6 +556,43 @@ def build_krb5(env, dirs, logfp):
             # "--with-ldap",
             "--build={}".format(env["RELENV_BUILD"]),
             "--host={}".format(env["RELENV_HOST"]),
+        ],
+        env=env,
+        stderr=logfp,
+        stdout=logfp,
+    )
+    runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+
+
+def build_libstdcxx(env, dirs, logfp):
+    """
+    Build libstdc++.
+
+    :param env: The environment dictionary
+    :type env: dict
+    :param dirs: The working directories
+    :type dirs: ``relenv.build.common.Dirs``
+    :param logfp: A handle for the log file
+    :type logfp: file
+    """
+    # https://gcc.gnu.org/wiki/InstallingGCC
+    # Annoying, archaic build steps
+    os.chdir(f"{dirs.source}")
+    runcmd(["./contrib/download_prerequisites"], env=env, stderr=logfp, stdout=logfp)
+    os.chdir(f"..")
+    if not os.path.isdir("objdir"):
+        os.mkdir("objdir")
+    os.chdir("objdir")
+    runcmd(
+        [
+            f"{dirs.source}/libstdc++-v3/configure",
+            "--prefix={}".format(dirs.prefix),
+            "--build={}".format(env["RELENV_BUILD"]),
+            "--host={}".format(env["RELENV_HOST"]),
+            "--enable-libstdcxx-threads",
+            "--enable-shared",
+            "--disable-multilib"
         ],
         env=env,
         stderr=logfp,
@@ -930,9 +968,21 @@ build.add(
 )
 
 build.add(
+    "libstdc++",
+    build_func=build_libstdcxx,
+    download={
+        "url": "https://ftp.gnu.org/gnu/gcc/gcc-{version}/gcc-{version}.tar.gz",
+        "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/gcc-{version}.tar.gz",
+        "version": "11.3.0",
+        "checksum": "5bc5f1582f7ad1024b50a31e1d28865d330f18b9",
+        "checkfunc": tarball_version,
+    },
+)
+
+build.add(
     "zeromq",
     build_func=build_zeromq,
-    wait_on=["libsodium", "libbsd"],
+    wait_on=["libsodium", "libbsd", "libstdc++"],
     download={
         "url": "https://github.com/zeromq/libzmq/releases/download/v{version}/zeromq-{version}.tar.gz",
         "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/zeromq-{version}.tar.gz",

@@ -573,7 +573,7 @@ def set_env_if_not_set(name, value):
     if name in os.environ and os.environ[name] != value:
         print(
             f"Warning: {name} environment not set to relenv's root!\n"
-            f"expected: {value}\ncurrent: {os.environ[name]}"
+            f"expected: \"{value}\"\ncurrent: \"{os.environ[name]}\""
         )
     else:
         debug(f"Relenv set {name}")
