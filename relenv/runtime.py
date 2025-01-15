@@ -601,7 +601,9 @@ def wrap_pip_build_wheel(name):
                 relenvroot = str(sys.RELENV)
                 rustflags = (
                     f"-C link-arg=-Wl,-rpath,{relenvroot}/lib "
+                    f"-C link-arg=-Wl,-rpath,{relenvroot}/lib64 "  # Add lib64 to rpath
                     f"-C link-arg=-L{relenvroot}/lib "
+                    f"-C link-arg=-L{relenvroot}/lib64 "           # Add lib64 to linker search path
                     f"-C link-arg=-L{toolchain}/sysroot/lib "
                     f"-C linker={cc}"
                 )
@@ -613,6 +615,24 @@ def wrap_pip_build_wheel(name):
                 set_env_if_not_set("RUSTFLAGS", rustflags)
                 set_env_if_not_set("CC", cc)
                 set_env_if_not_set("CXX", f"{toolchain}/bin/{triplet}-g++")
+                set_env_if_not_set("LD", f"{toolchain}/bin/{triplet}-ld")
+                set_env_if_not_set("AR", f"{toolchain}/bin/{triplet}-ar")
+                set_env_if_not_set("NM", f"{toolchain}/bin/{triplet}-nm")
+                set_env_if_not_set("RANLIB", f"{toolchain}/bin/{triplet}-ranlib")
+                set_env_if_not_set("STRIP", f"{toolchain}/bin/{triplet}-strip")
+                set_env_if_not_set("AS", f"{toolchain}/bin/{triplet}-as")
+                set_env_if_not_set("OBJCOPY", f"{toolchain}/bin/{triplet}-objcopy")
+                set_env_if_not_set("OBJDUMP", f"{toolchain}/bin/{triplet}-objdump")
+                set_env_if_not_set("READELF", f"{toolchain}/bin/{triplet}-readelf")
+                set_env_if_not_set("SIZE", f"{toolchain}/bin/{triplet}-size")
+                set_env_if_not_set("STRINGS", f"{toolchain}/bin/{triplet}-strings")
+                set_env_if_not_set("ADDR2LINE", f"{toolchain}/bin/{triplet}-addr2line")
+                set_env_if_not_set("CXXFILT", f"{toolchain}/bin/{triplet}-c++filt")
+                set_env_if_not_set("GCOV", f"{toolchain}/bin/{triplet}-gcov")
+                set_env_if_not_set("GCOV_TOOL", f"{toolchain}/bin/{triplet}-gcov-tool")
+                set_env_if_not_set("GPROF", f"{toolchain}/bin/{triplet}-gprof")
+                set_env_if_not_set("ELFEDIT", f"{toolchain}/bin/{triplet}-elfedit")
+
             return func(*args, **kwargs)
 
         return wrapper
