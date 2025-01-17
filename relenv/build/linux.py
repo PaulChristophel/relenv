@@ -584,11 +584,19 @@ def build_libstdcxx(env, dirs, logfp):
     if not os.path.isdir("objdir"):
         os.mkdir("objdir")
     os.chdir("objdir")
+
+    # Create lib64 as a relative symlink to lib
+    lib64_path = os.path.join(dirs.prefix, "lib64")
+    if not os.path.exists(lib64_path):
+        os.symlink("lib", lib64_path, target_is_directory=True)
+        logfp.write(f"Created relative symlink: {lib64_path} -> lib\n")
+
     runcmd(
         [
             f"{dirs.source}/libstdc++-v3/configure",
             "--prefix={}".format(dirs.prefix),
             "--libdir={}/lib".format(dirs.prefix),  # Force libraries into lib
+            "--with-toolexeclibdir={}/lib".format(dirs.prefix),  # Ensure libraries go to lib
             "--build={}".format(env["RELENV_BUILD"]),
             "--host={}".format(env["RELENV_HOST"]),
             "--enable-libstdcxx-threads",
