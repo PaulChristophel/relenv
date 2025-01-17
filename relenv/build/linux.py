@@ -475,10 +475,10 @@ def build_zeromq(env, dirs, logfp):
     # Ensure position-independent code for shared libraries
     env["CFLAGS"] = f"-fPIC {env.get('CFLAGS', '')}"
     env["CXXFLAGS"] = f"-std=c++11 -fPIC {env.get('CXXFLAGS', '')}"
-    env["LDFLAGS"] = f"{env['LDFLAGS']} -L{dirs.prefix}/lib -lbsd -lsodium -lstdc++"
+    env["LDFLAGS"] = f"-L{dirs.prefix}/lib -lbsd -lsodium -lstdc++ {env.get('LDFLAGS', '')}"
     env["CPPFLAGS"] += f" -I{dirs.prefix}/include"
     env["PKG_CONFIG_PATH"] = f"{dirs.prefix}/lib/pkgconfig:{env.get('PKG_CONFIG_PATH', '')}"
-    env["LD_LIBRARY_PATH"] = f"{dirs.prefix}/lib:{dirs.prefix}/lib64:{env.get('LD_LIBRARY_PATH', '')}"
+    env["LD_LIBRARY_PATH"] = f"{dirs.prefix}/lib:{env.get('LD_LIBRARY_PATH', '')}"
     runcmd(
         [
             "./configure",
@@ -585,11 +585,11 @@ def build_libstdcxx(env, dirs, logfp):
         os.mkdir("objdir")
     os.chdir("objdir")
 
-    # Create lib64 as a relative symlink to lib
-    lib64_path = os.path.join(dirs.prefix, "lib64")
-    if not os.path.exists(lib64_path):
-        os.symlink("lib", lib64_path, target_is_directory=True)
-        logfp.write(f"Created relative symlink: {lib64_path} -> lib\n")
+    # # Create lib64 as a relative symlink to lib
+    # lib64_path = os.path.join(dirs.prefix, "lib64")
+    # if not os.path.exists(lib64_path):
+    #     os.symlink("lib", lib64_path, target_is_directory=True)
+    #     logfp.write(f"Created relative symlink: {lib64_path} -> lib\n")
 
     runcmd(
         [
@@ -606,6 +606,10 @@ def build_libstdcxx(env, dirs, logfp):
         env=env,
         stderr=logfp,
         stdout=logfp,
+    )
+    # libstdc++ doesn't want to honor libdir, force install to lib instead of lib64
+    runcmd(
+        ["find", ".", "-name", "Makefile", "-exec", "sed", "-i", "s/lib64/lib/g", "{}", "\;"], env=env, stderr=logfp, stdout=logfp
     )
     runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
     runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
