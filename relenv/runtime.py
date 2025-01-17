@@ -601,9 +601,7 @@ def wrap_pip_build_wheel(name):
                 relenvroot = str(sys.RELENV)
                 rustflags = (
                     f"-C link-arg=-Wl,-rpath,{relenvroot}/lib "
-                    f"-C link-arg=-Wl,-rpath,{relenvroot}/lib64 "  # Add lib64 to rpath
                     f"-C link-arg=-L{relenvroot}/lib "
-                    f"-C link-arg=-L{relenvroot}/lib64 "           # Add lib64 to linker search path
                     f"-C link-arg=-L{toolchain}/sysroot/lib "
                     f"-C linker={cc}"
                 )

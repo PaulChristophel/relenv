@@ -588,6 +588,7 @@ def build_libstdcxx(env, dirs, logfp):
         [
             f"{dirs.source}/libstdc++-v3/configure",
             "--prefix={}".format(dirs.prefix),
+            "--libdir={}/lib".format(dirs.prefix),  # Force libraries into lib
             "--build={}".format(env["RELENV_BUILD"]),
             "--host={}".format(env["RELENV_HOST"]),
             "--enable-libstdcxx-threads",
@@ -973,8 +974,8 @@ build.add(
     download={
         "url": "https://ftp.gnu.org/gnu/gcc/gcc-{version}/gcc-{version}.tar.gz",
         "fallback_url": "https://nexus.oit.gatech.edu/relenv/dependencies/gcc-{version}.tar.gz",
-        "version": "11.3.0",
-        "checksum": "5bc5f1582f7ad1024b50a31e1d28865d330f18b9",
+        "version": "11.5.0",
+        "checksum": "19e8339f20340c47bff84a63d14e75a8dd172344",
         "checkfunc": tarball_version,
     },
 )
